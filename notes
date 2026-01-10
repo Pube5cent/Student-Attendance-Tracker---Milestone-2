@@ -1,0 +1,79 @@
+3.2 Milestone 2 Requirements (Week 14)
+- Create one school term (represents the database) and view the term name
+- Reading from a file, outputting to screen, writing to a file
+- Update attendance rows and view updated sheet
+- Delete attendance rows and view updated sheet
+- Count and output number of rows in the attendance sheet
+- Advanced error handling and validation
+- Full commenting and formatting of code
+- Complete documentation (all commands, diagrams, pseudocode, explanations)
+- At least 3 sample inputs with screen and file outputs
+- Complete user documentation and explanation of features
+- Final polished submission
+
+SAMPLE OUTPUT for Milestone 2
+===========================================
+   STUDENT ATTENDANCE TRACKER - MILESTONE 2
+===========================================
+
+Create School Term (Database)
+-------------------------------------------
+Enter term name: Trimester2530
+Database "Trimester2530" created and loaded.
+
+Reading attendance data from file...
+Successfully loaded: Week1_Attendance.csv
+
+-------------------------------------------
+Current Attendance Sheet
+-------------------------------------------
+StudentID, Name, Status
+1001, John Tan, 1
+1002, Mei Ling, 0
+1003, Aaron Lee, 1
+
+-------------------------------------------
+Update Attendance Row
+-------------------------------------------
+Enter StudentID to update: 1002
+Enter new status: 1
+Row updated successfully.
+
+Updated Sheet:
+StudentID, Name, Status
+1001, John Tan, 1
+1002, Mei Ling, 1
+1003, Aaron Lee, 1
+
+-------------------------------------------
+Delete Attendance Row
+-------------------------------------------
+Enter StudentID to delete: 1003
+Row deleted successfully.
+
+Updated Sheet:
+StudentID, Name, Status
+1001, John Tan, 1
+1002, Mei Ling, 1
+
+-------------------------------------------
+Count Rows
+-------------------------------------------
+Number of rows: 2
+
+-------------------------------------------
+Advanced Error Handling Demo
+-------------------------------------------
+Enter StudentID to update: 9999
+Error: StudentID does not exist.
+
+Enter StudentID (INT only): Tom
+Error: Invalid integer. Try again.
+
+-------------------------------------------
+Writing updated sheet to output file...
+Output saved as: Week1_Attendance_Updated.csv
+
+-------------------------------------------
+End of Milestone 2 Output
+-------------------------------------------
