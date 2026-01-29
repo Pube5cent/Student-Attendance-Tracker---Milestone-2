@@ -26,7 +26,7 @@ string createSchoolTerm()
     string termName;
     cout << "Enter term name: ";
     getline(cin, termName);
-
+    // display
     cout << "Database \"" << termName << "\" created and loaded.\n\n";
     return termName;
 }
@@ -43,7 +43,7 @@ void readDatabase(const string& filename)
 {
     ifstream inFile(filename);
     string line;
-
+    //display the thing
     cout << "-------------------------------------------\n";
     cout << "Current Attendance Sheet\n";
     cout << "-------------------------------------------\n";
