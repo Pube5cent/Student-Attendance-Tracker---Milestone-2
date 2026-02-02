@@ -3,13 +3,15 @@
 #include <fstream>
 #include <string>
 #include <cctype>
+#include <limits>
 
 using namespace std;
 
-// globals
+// milestone 1 constants
 const int MAX_COLUMNS = 10;
 const int MAX_ROWS = 100;
 
+// Combined variables
 string sheetName;
 string columnNames[MAX_COLUMNS];
 string textCells[MAX_ROWS][MAX_COLUMNS];
@@ -18,7 +20,7 @@ int intCells[MAX_ROWS][MAX_COLUMNS];
 int numColumns = 0;
 int numRows = 0;
 
-// Attendance Tracker
+// Combined functions
 void createSheet(string name);
 void getColumnInfo(int colIndex);
 void insertRow();
@@ -28,17 +30,19 @@ int convertToInt(const string& str);
 
 void runAttendanceTracker(const string& databaseFile);
 
-// TC5L database
+// Database
 string createSchoolTerm();
 bool fileExists(const string& filename);
 void readDatabase(const string& filename);
 void saveToCSV(const string& filename);
 
-// main
+
+//main
+// Adam Syafiq
 int main()
 {
     cout << "===========================================\n";
-    cout << "   STUDENT ATTENDANCE TRACKER - COMBINED\n";
+    cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 2\n";
     cout << "===========================================\n\n";
 
     string termName = createSchoolTerm();
@@ -55,7 +59,11 @@ int main()
         cin.ignore();
 
         if (choice == 'Y' || choice == 'y')
-            runAttendanceTracker(databaseFile);
+            {
+            // -----------------Note to Aidan and Hafiy, updating, deleting etc starts here---------------------------------------
+            cout << "\n[NOTE] Update attendance logic will be implemented here later.\n";
+            cout << "Program ended (update feature pending).\n";
+            }
         else
             cout << "\nNo changes made. Program ended.\n";
     }
@@ -75,16 +83,19 @@ string createSchoolTerm()
     string termName;
     cout << "Enter term name: ";
     getline(cin, termName);
+    // display
     cout << "Database \"" << termName << "\" created and loaded.\n\n";
     return termName;
 }
 
+// Check if a the file exists (Adam)
 bool fileExists(const string& filename)
 {
     ifstream file(filename);
     return file.good();
 }
 
+// If the file exists read the file (Adam)
 void readDatabase(const string& filename)
 {
     ifstream inFile(filename);
@@ -101,18 +112,21 @@ void readDatabase(const string& filename)
     inFile.close();
 }
 
-// void to run the original file
+// void to run the original milestione1 file
 void runAttendanceTracker(const string& databaseFile)
 {
+    //hafiy
     string input;
     int numCols;
     char continueInsert;
 
-    cout << "Enter Attendance sheet name: ";
+    cout << "Enter attendance sheet name: ";
     getline(cin, input);
     createSheet(input);
 
-    cout << "Enter number of columns (max 10): ";
+    cout << "Attendance sheet \"" << input << "\" created successfully.\n\n";
+
+    cout << "Define number of columns (max 10): ";
     while (!(cin >> numCols) || numCols < 1 || numCols > MAX_COLUMNS)
     {
         cin.clear();
@@ -126,27 +140,36 @@ void runAttendanceTracker(const string& databaseFile)
     for (int i = 0; i < numCols; i++)
         getColumnInfo(i);
 
+    cout << "\nSheet structure created successfully.\n\n";
+
     continueInsert = 'y';
+
     while (continueInsert == 'y' || continueInsert == 'Y')
     {
+        cout << "-------------------------------------------\n";
+        cout << "Insert New Attendance Row\n";
+        cout << "-------------------------------------------\n";
+
         insertRow();
-        cout << "Insert another row? (y/n): ";
+
+        cout << "\nInsert another row? (y/n): ";
         cin >> continueInsert;
-        cin.ignore();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << endl;
     }
 
+    /* doesnt get called for M2 (milestone 2 btw)
+    cout << "-------------------------------------------\n";
+    cout << "View Attendance Sheet (CSV Mode)\n";
+    cout << "-------------------------------------------\n";
+
     ViewCSV();
+    */
     saveToCSV(databaseFile);
 }
 
 // attendance tracker copy paste
-void createSheet(string name)
-{
-    sheetName = name;
-    numColumns = 0;
-    numRows = 0;
-}
-
+// hafiy
 void insertRow()
 {
     if (numRows >= MAX_ROWS)
@@ -159,7 +182,15 @@ void insertRow()
 
     for (int i = 0; i < numColumns; i++)
     {
-        cout << "Enter " << columnNames[i] << ": ";
+        bool isStatus =
+            (columnNames[i] == "Status" || columnNames[i] == "status");
+
+        if (isStatus)
+            cout << "Enter " << columnNames[i]
+                 << " (Present: 1, Absent: 0): ";
+        else
+            cout << "Enter " << columnNames[i] << ": ";
+
         getline(cin, input);
 
         if (columnTypes[i] == 0)
@@ -183,15 +214,20 @@ void insertRow()
     cout << "Row inserted successfully.\n";
 }
 
+// Adam Syafiq [doesnt get called anymore for M2 (milestone 2 btw)]
+/*
 void ViewCSV()
 {
+    //For printing the column headers
     for (int i = 0; i < numColumns; i++)
     {
         cout << columnNames[i];
-        if (i < numColumns - 1) cout << ", ";
+        if (i < numColumns - 1)
+            cout << ", ";
     }
     cout << endl;
 
+    //For printing rows
     for (int i = 0; i < numRows; i++)
     {
         for (int j = 0; j < numColumns; j++)
@@ -201,10 +237,18 @@ void ViewCSV()
             else
                 cout << textCells[i][j];
 
-            if (j < numColumns - 1) cout << ", ";
+            if (j < numColumns - 1)
+                cout << ", ";
         }
         cout << endl;
     }
+}
+*/
+void createSheet(string name)
+{
+    sheetName = name;
+    numColumns = 0;
+    numRows = 0;
 }
 
 void saveToCSV(const string& filename)
