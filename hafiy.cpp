@@ -296,7 +296,27 @@ void insertRow()
         // Enforce integer validation for INT columns or StudentID columns
         bool enforceInt = (columnTypes[i] == 0) || (lowerColName == "studentid") || (lowerColName == "student id");
 
-        if (enforceInt)
+        // Special validation for Status column: only allow 0 or 1
+        if (isStatus)
+        {
+            if (input == "0" || input == "1")
+            {
+                if (columnTypes[i] == 0)
+                {
+                    intCells[numRows][i] = convertToInt(input);
+                }
+                else
+                {
+                    textCells[numRows][i] = input;
+                }
+            }
+            else
+            {
+                cout << "Error: Status must be 0 (Absent) or 1 (Present) only. Please try again.\n";
+                i--;
+            }
+        }
+        else if (enforceInt)
         {
             if (isNumber(input))
             {
@@ -377,7 +397,28 @@ void updateRow()
         // Enforce integer validation for INT columns or StudentID columns
         bool enforceInt = (columnTypes[i] == 0) || (lowerColName == "studentid") || (lowerColName == "student id");
 
-        if (enforceInt)
+        // Special validation for Status column: only allow 0 or 1
+        if (isStatus)
+        {
+            if (input == "0" || input == "1")
+            {
+                if (columnTypes[i] == 0)
+                {
+                    intCells[rowIndex][i] = convertToInt(input);
+                }
+                else
+                {
+                    textCells[rowIndex][i] = input;
+                }
+            }
+            else
+            {
+                cout << "Error: Status must be 0 (Absent) or 1 (Present) only. Please try again.\n";
+                i--; // Retry this column
+                continue;
+            }
+        }
+        else if (enforceInt)
         {
             if (isNumber(input))
             {
@@ -622,7 +663,7 @@ int convertToInt(const string& str)
 void getColumnInfo(int colIndex)
 {
     string input;
-    cout << "Enter column " << colIndex + 1 << " name : ";
+    cout << "Enter column " << colIndex + 1 << " name (add INT if needed): ";
     getline(cin, input);
 
     // Validate non-empty column name
