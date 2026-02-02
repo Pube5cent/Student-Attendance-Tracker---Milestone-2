@@ -392,6 +392,52 @@ void deleteRow()
     cout << "Row deleted successfully.\n";
 }
 
+// Delete the entire sheet (clear all data, columns, and rows)
+void deleteSheet()
+{
+    if (numRows == 0 && numColumns == 0)
+    {
+        cout << "Sheet is already empty. Nothing to delete.\n";
+        return;
+    }
+
+    char confirm;
+    cout << "WARNING: This will delete ALL data in the sheet (all rows and columns).\n";
+    cout << "Are you sure you want to continue? (Y/N): ";
+    cin >> confirm;
+    cin.ignore();
+
+    if (confirm != 'Y' && confirm != 'y')
+    {
+        cout << "Delete cancelled. Sheet remains unchanged.\n";
+        return;
+    }
+
+    // Clear all column names and types
+    for (int i = 0; i < MAX_COLUMNS; i++)
+    {
+        columnNames[i] = "";
+        columnTypes[i] = 1; // default to text
+    }
+
+    // Clear all cell data
+    for (int i = 0; i < MAX_ROWS; i++)
+    {
+        for (int j = 0; j < MAX_COLUMNS; j++)
+        {
+            intCells[i][j] = 0;
+            textCells[i][j] = "";
+        }
+    }
+
+    // Reset counters
+    numColumns = 0;
+    numRows = 0;
+    sheetName = "";
+
+    cout << "Entire sheet deleted successfully. Sheet is now empty.\n";
+}
+
 // Show the current number of rows in the sheet
 void showRowCount()
 {
