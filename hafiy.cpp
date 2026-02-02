@@ -20,6 +20,7 @@
 #include <string>
 #include <cctype>
 #include <stdexcept>
+#include <sstream>
 
 using namespace std;
 
@@ -53,8 +54,11 @@ void runAttendanceTracker(const string& databaseFile);
 string createSchoolTerm();
 bool fileExists(const string& filename);
 void readDatabase(const string& filename);
+void loadDatabase(const string& filename);
 void saveToCSV(const string& filename);
 
+
+//fiy
 // main
 int main()
 {
@@ -69,6 +73,9 @@ int main()
     {
         cout << "Existing database found.\n\n";
         readDatabase(databaseFile);
+        
+        // Load the database into the sheet structure
+        loadDatabase(databaseFile);
 
         char choice;
         cout << "Would you like to update the attendance rows? (Y/N): ";
@@ -84,7 +91,68 @@ int main()
         }
 
         if (choice == 'Y' || choice == 'y')
-            runAttendanceTracker(databaseFile);
+        {
+            // Skip sheet creation since it's already loaded, go straight to menu
+            bool done = false;
+            while (!done)
+            {
+                int menuChoice;
+                cout << "\n======= Attendance Menu (Sheet: " << sheetName << ") =======\n";
+                cout << "1. View attendance sheet\n";
+                cout << "2. Insert new row\n";
+                cout << "3. Update existing row\n";
+                cout << "4. Delete a row\n";
+                cout << "5. Delete entire sheet\n";
+                cout << "6. Show number of rows\n";
+                cout << "7. Save and exit\n";
+                cout << "8. Exit without saving\n";
+                cout << "Enter your choice (1-8): ";
+
+                if (!(cin >> menuChoice))
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid input. Please enter a number between 1 and 8.\n";
+                    continue;
+                }
+
+                cin.ignore();
+
+                switch (menuChoice)
+                {
+                case 1:
+                    ViewCSV();
+                    break;
+                case 2:
+                    insertRow();
+                    break;
+                case 3:
+                    updateRow();
+                    break;
+                case 4:
+                    deleteRow();
+                    break;
+                case 5:
+                    deleteSheet();
+                    break;
+                case 6:
+                    showRowCount();
+                    break;
+                case 7:
+                    ViewCSV();
+                    saveToCSV(databaseFile);
+                    done = true;
+                    break;
+                case 8:
+                    cout << "Exiting without saving changes.\n";
+                    done = true;
+                    break;
+                default:
+                    cout << "Invalid choice. Please choose a number between 1 and 8.\n";
+                    break;
+                }
+            }
+        }
         else
             cout << "\nNo changes made. Program ended.\n";
     }
@@ -149,6 +217,95 @@ void readDatabase(const string& filename)
     inFile.close();
 }
 
+// Load an existing CSV database file into the sheet structure
+void loadDatabase(const string& filename)
+{
+    ifstream inFile(filename);
+
+    if (!inFile)
+    {
+        cout << "Error: Could not open database file \"" << filename << "\" for reading.\n\n";
+        return;
+    }
+
+    string line;
+    
+    // Extract sheet name from filename (remove path, extension, and "_Database" suffix)
+    string sheetNameFromFile = filename;
+    // Remove path if present
+    size_t lastSlash = sheetNameFromFile.find_last_of("/\\");
+    if (lastSlash != string::npos)
+        sheetNameFromFile = sheetNameFromFile.substr(lastSlash + 1);
+    
+    // Remove "_Database.csv" or ".csv" extension
+    if (sheetNameFromFile.length() > 12 && sheetNameFromFile.substr(sheetNameFromFile.length() - 12) == "_Database.csv")
+        sheetNameFromFile = sheetNameFromFile.substr(0, sheetNameFromFile.length() - 12);
+    else if (sheetNameFromFile.length() > 4 && sheetNameFromFile.substr(sheetNameFromFile.length() - 4) == ".csv")
+        sheetNameFromFile = sheetNameFromFile.substr(0, sheetNameFromFile.length() - 4);
+    
+    createSheet(sheetNameFromFile);
+
+    // Read header row (column names)
+    if (getline(inFile, line))
+    {
+        // Parse column names from CSV
+        stringstream ss(line);
+        string cell;
+        numColumns = 0;
+        
+        while (getline(ss, cell, ',') && numColumns < MAX_COLUMNS)
+        {
+            // Trim whitespace
+            cell.erase(0, cell.find_first_not_of(" \t"));
+            cell.erase(cell.find_last_not_of(" \t") + 1);
+            
+            columnNames[numColumns] = cell;
+            // Determine type: 0 = integer, 1 = text
+            columnTypes[numColumns] = (cell.find("INT") != string::npos ||
+                                     cell.find("int") != string::npos) ? 0 : 1;
+            numColumns++;
+        }
+    }
+
+    // Read data rows
+    numRows = 0;
+    while (getline(inFile, line) && numRows < MAX_ROWS)
+    {
+        if (line.empty()) continue; // Skip empty lines
+        
+        stringstream ss(line);
+        string cell;
+        int colIndex = 0;
+        
+        while (getline(ss, cell, ',') && colIndex < numColumns)
+        {
+            // Trim whitespace
+            cell.erase(0, cell.find_first_not_of(" \t"));
+            cell.erase(cell.find_last_not_of(" \t") + 1);
+            
+            if (columnTypes[colIndex] == 0)
+            {
+                // Integer column
+                if (isNumber(cell))
+                    intCells[numRows][colIndex] = convertToInt(cell);
+                else
+                    intCells[numRows][colIndex] = 0;
+            }
+            else
+            {
+                // Text column
+                textCells[numRows][colIndex] = cell;
+            }
+            colIndex++;
+        }
+        numRows++;
+    }
+
+    inFile.close();
+    
+    cout << "Database loaded: Sheet \"" << sheetName << "\" with " << numRows << " rows and " << numColumns << " columns.\n\n";
+}
+
 // Main loop to define the sheet, insert rows, and allow updates/deletes
 void runAttendanceTracker(const string& databaseFile)
 {
@@ -192,6 +349,7 @@ void runAttendanceTracker(const string& databaseFile)
         cin.ignore();
     }
 
+    //fiyy
     // Menu loop for viewing, updating, deleting, and saving
     bool done = false;
     while (!done)
@@ -262,6 +420,7 @@ void createSheet(string name)
     numRows = 0;
 }
 
+//fiy
 // Insert a new row of data at the end of the sheet
 void insertRow()
 {
@@ -345,6 +504,7 @@ void insertRow()
     cout << "Row inserted successfully.\n";
 }
 
+//fiy
 // Update an existing row by index
 void updateRow()
 {
@@ -445,6 +605,7 @@ void updateRow()
     cout << "Row updated successfully.\n";
 }
 
+//fiy
 // Delete a row by index and shift remaining rows up
 void deleteRow()
 {
@@ -571,6 +732,8 @@ void ViewCSV()
     }
 }
 
+
+
 // Save the current attendance sheet to a CSV file
 void saveToCSV(const string& filename)
 {
@@ -618,6 +781,7 @@ void saveToCSV(const string& filename)
     }
 }
 
+//fiy
 // Validate if a string represents a valid integer number
 bool isNumber(const string& str)
 {
@@ -659,11 +823,12 @@ int convertToInt(const string& str)
     }
 }
 
-// Get column name and determine its data type (INT or text)
+//fiy
+// Get column name and determine its data type
 void getColumnInfo(int colIndex)
 {
     string input;
-    cout << "Enter column " << colIndex + 1 << " name (add INT if needed): ";
+    cout << "Enter column " << colIndex + 1 << " name: ";
     getline(cin, input);
 
     // Validate non-empty column name
