@@ -41,6 +41,7 @@ void getColumnInfo(int colIndex);
 void insertRow();
 void updateRow();
 void deleteRow();
+void deleteSheet();
 void showRowCount();
 void ViewCSV();
 bool isNumber(const string& str);
@@ -201,16 +202,17 @@ void runAttendanceTracker(const string& databaseFile)
         cout << "2. Insert new row\n";
         cout << "3. Update existing row\n";
         cout << "4. Delete a row\n";
-        cout << "5. Show number of rows\n";
-        cout << "6. Save and exit\n";
-        cout << "7. Exit without saving\n";
-        cout << "Enter your choice (1-7): ";
+        cout << "5. Delete entire sheet\n";
+        cout << "6. Show number of rows\n";
+        cout << "7. Save and exit\n";
+        cout << "8. Exit without saving\n";
+        cout << "Enter your choice (1-8): ";
 
         if (!(cin >> choice))
         {
             cin.clear();
             cin.ignore(1000, '\n');
-            cout << "Invalid input. Please enter a number between 1 and 7.\n";
+            cout << "Invalid input. Please enter a number between 1 and 8.\n";
             continue;
         }
 
@@ -231,19 +233,22 @@ void runAttendanceTracker(const string& databaseFile)
             deleteRow();
             break;
         case 5:
-            showRowCount();
+            deleteSheet();
             break;
         case 6:
+            showRowCount();
+            break;
+        case 7:
             ViewCSV();
             saveToCSV(databaseFile);
             done = true;
             break;
-        case 7:
+        case 8:
             cout << "Exiting without saving changes.\n";
             done = true;
             break;
         default:
-            cout << "Invalid choice. Please choose a number between 1 and 7.\n";
+            cout << "Invalid choice. Please choose a number between 1 and 8.\n";
             break;
         }
     }
@@ -518,7 +523,7 @@ int convertToInt(const string& str)
 void getColumnInfo(int colIndex)
 {
     string input;
-    cout << "Enter column " << colIndex + 1 << " name (add INT if needed): ";
+    cout << "Enter column " << colIndex + 1 << " name: ";
     getline(cin, input);
 
     // Validate non-empty column name
