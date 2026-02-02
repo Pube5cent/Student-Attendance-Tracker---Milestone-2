@@ -275,23 +275,49 @@ void insertRow()
 
     for (int i = 0; i < numColumns; i++)
     {
-        cout << "Enter " << columnNames[i] << ": ";
-        getline(cin, input);
+        // Check if this is a Status column and provide special prompt
+        bool isStatus = (columnNames[i].length() == 6) &&
+                        (columnNames[i][0] == 'S' || columnNames[i][0] == 's') &&
+                        (columnNames[i] == "Status" || columnNames[i] == "status");
 
-        if (columnTypes[i] == 0)
+        if (isStatus)
+            cout << "Enter " << columnNames[i] << " (Present: 1, Absent: 0): ";
+        else
+            cout << "Enter " << columnNames[i] << ": ";
+
+        getline(cin, input, '\n');
+
+        // Convert column name to lowercase for case-insensitive comparison
+        string lowerColName = "";
+        for (char& c : columnNames[i]) {
+            lowerColName += tolower(c);
+        }
+
+        // Enforce integer validation for INT columns or StudentID columns
+        bool enforceInt = (columnTypes[i] == 0) || (lowerColName == "studentid") || (lowerColName == "student id");
+
+        if (enforceInt)
         {
             if (isNumber(input))
-                intCells[numRows][i] = convertToInt(input);
+            {
+                if (columnTypes[i] == 0) 
+                {
+                    intCells[numRows][i] = convertToInt(input);
+                } 
+                else 
+                {
+                    textCells[numRows][i] = input;
+                }
+            }
             else
             {
-                cout << "Invalid number. Try again.\n";
-                i--;
-                continue;
+                cout << "Error: Invalid INT value. Please enter a number.\n";
+                i--; 
             }
         }
         else
         {
-            textCells[numRows][i] = input;
+            textCells[numRows][i] = input; 
         }
     }
 
@@ -330,16 +356,43 @@ void updateRow()
     string input;
     for (int i = 0; i < numColumns; i++)
     {
-        cout << "Enter new value for " << columnNames[i] << ": ";
+        // Check if this is a Status column and provide special prompt
+        bool isStatus = (columnNames[i].length() == 6) &&
+                        (columnNames[i][0] == 'S' || columnNames[i][0] == 's') &&
+                        (columnNames[i] == "Status" || columnNames[i] == "status");
+
+        if (isStatus)
+            cout << "Enter new value for " << columnNames[i] << " (Present: 1, Absent: 0): ";
+        else
+            cout << "Enter new value for " << columnNames[i] << ": ";
+
         getline(cin, input);
 
-        if (columnTypes[i] == 0)
+        // Convert column name to lowercase for case-insensitive comparison
+        string lowerColName = "";
+        for (char& c : columnNames[i]) {
+            lowerColName += tolower(c);
+        }
+
+        // Enforce integer validation for INT columns or StudentID columns
+        bool enforceInt = (columnTypes[i] == 0) || (lowerColName == "studentid") || (lowerColName == "student id");
+
+        if (enforceInt)
         {
             if (isNumber(input))
-                intCells[rowIndex][i] = convertToInt(input);
+            {
+                if (columnTypes[i] == 0)
+                {
+                    intCells[rowIndex][i] = convertToInt(input);
+                }
+                else
+                {
+                    textCells[rowIndex][i] = input;
+                }
+            }
             else
             {
-                cout << "Invalid number. Keeping previous value for this column.\n";
+                cout << "Error: Invalid INT value. Keeping previous value for this column.\n";
             }
         }
         else
@@ -569,7 +622,7 @@ int convertToInt(const string& str)
 void getColumnInfo(int colIndex)
 {
     string input;
-    cout << "Enter column " << colIndex + 1 << " name: ";
+    cout << "Enter column " << colIndex + 1 << " name : ";
     getline(cin, input);
 
     // Validate non-empty column name
