@@ -184,7 +184,7 @@ void runAttendanceTracker(const string& databaseFile)
     saveToCSV(databaseFile);
 }
 
-// attendance tracker copy paste
+// milestone 1 implemented (Adam)
 // hafiy
 void insertRow()
 {
@@ -260,6 +260,7 @@ void ViewCSV()
     }
 }
 */
+
 void createSheet(string name)
 {
     sheetName = name;
@@ -267,6 +268,7 @@ void createSheet(string name)
     numRows = 0;
 }
 
+//saving the file to csv (Adam)
 void saveToCSV(const string& filename)
 {
     ofstream file(filename);
@@ -296,6 +298,7 @@ void saveToCSV(const string& filename)
     cout << "\nAttendance saved to database successfully.\n";
 }
 
+// hafiy
 bool isNumber(const string& str)
 {
     if (str.empty()) return false;
