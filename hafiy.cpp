@@ -44,6 +44,7 @@ void updateRow();
 void deleteRow();
 void deleteSheet();
 void showRowCount();
+int getValidInt(string prompt); // (Aidan)
 void ViewCSV();
 bool isNumber(const string& str);
 int convertToInt(const string& str);
@@ -106,17 +107,8 @@ int main()
                 cout << "6. Show number of rows\n";
                 cout << "7. Save and exit\n";
                 cout << "8. Exit without saving\n";
-                cout << "Enter your choice (1-8): ";
-
-                if (!(cin >> menuChoice))
-                {
-                    cin.clear();
-                    cin.ignore(1000, '\n');
-                    cout << "Invalid input. Please enter a number between 1 and 8.\n";
-                    continue;
-                }
-
-                cin.ignore();
+                // Aidan: Advanced Error Handling
+                menuChoice = getValidInt("Enter your choice (1-8): ");
 
                 switch (menuChoice)
                 {
@@ -325,15 +317,17 @@ void runAttendanceTracker(const string& databaseFile)
     
     createSheet(input);
 
-    cout << "Enter number of columns (max 10): ";
-    while (!(cin >> numCols) || numCols < 1 || numCols > MAX_COLUMNS)
-    {
-        cin.clear();
-        cin.ignore(100, '\n');
-        cout << "Invalid number. Try again: ";
+    // ---------------------------------------------------------
+    // AIDAN'S TASK: Replaced old "weak" loop with getValidInt
+    // ---------------------------------------------------------
+    while (true) {
+        numCols = getValidInt("Enter number of columns (max 10): ");
+        if (numCols >= 1 && numCols <= MAX_COLUMNS) break;
+        cout << "Invalid number. Number must be between 1 and " << MAX_COLUMNS << ".\n";
     }
+    // ---------------------------------------------------------
 
-    cin.ignore();
+    // cin.ignore(); <--- REMOVED (getValidInt handles this automatically)
     numColumns = numCols;
 
     for (int i = 0; i < numCols; i++)
@@ -349,7 +343,6 @@ void runAttendanceTracker(const string& databaseFile)
         cin.ignore();
     }
 
-    //fiyy
     // Menu loop for viewing, updating, deleting, and saving
     bool done = false;
     while (!done)
@@ -364,17 +357,12 @@ void runAttendanceTracker(const string& databaseFile)
         cout << "6. Show number of rows\n";
         cout << "7. Save and exit\n";
         cout << "8. Exit without saving\n";
-        cout << "Enter your choice (1-8): ";
 
-        if (!(cin >> choice))
-        {
-            cin.clear();
-            cin.ignore(1000, '\n');
-            cout << "Invalid input. Please enter a number between 1 and 8.\n";
-            continue;
-        }
-
-        cin.ignore();
+        // ---------------------------------------------------------
+        // AIDAN'S TASK: Replaced old "weak" input with getValidInt
+        // ---------------------------------------------------------
+        choice = getValidInt("Enter your choice (1-8): ");
+        // ---------------------------------------------------------
 
         switch (choice)
         {
@@ -514,16 +502,9 @@ void updateRow()
         return;
     }
 
-    int rowIndex;
-    cout << "Enter the row number to update (1 to " << numRows << "): ";
-    if (!(cin >> rowIndex))
-    {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Invalid input. Update cancelled.\n";
-        return;
-    }
-    cin.ignore();
+    // Aidan: Error Handling
+    string prompt = "Enter the row number to update (1 to " + to_string(numRows) + "): ";
+    int rowIndex = getValidInt(prompt);
 
     if (rowIndex < 1 || rowIndex > numRows)
     {
@@ -615,16 +596,9 @@ void deleteRow()
         return;
     }
 
-    int rowIndex;
-    cout << "Enter the row number to delete (1 to " << numRows << "): ";
-    if (!(cin >> rowIndex))
-    {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Invalid input. Delete cancelled.\n";
-        return;
-    }
-    cin.ignore();
+    // Aidan: Error Handling
+    string prompt = "Enter the row number to delete (1 to " + to_string(numRows) + "): ";
+    int rowIndex = getValidInt(prompt);
 
     if (rowIndex < 1 || rowIndex > numRows)
     {
@@ -693,10 +667,15 @@ void deleteSheet()
     cout << "Entire sheet deleted successfully. Sheet is now empty.\n";
 }
 
-// Show the current number of rows in the sheet
+// Aidan: Upgraded Row Counter
 void showRowCount()
 {
-    cout << "Current number of rows in the attendance sheet: " << numRows << "\n";
+    cout << "\n-----------------------------" << endl;
+    cout << "   Attendance Sheet Stats    " << endl;
+    cout << "-----------------------------" << endl;
+    cout << "Total Records (Rows): " << numRows << endl;
+    cout << "Remaining Capacity:   " << MAX_ROWS - numRows << endl;
+    cout << "-----------------------------" << endl;
 }
 
 // Display the current attendance sheet in CSV format to the screen
@@ -842,4 +821,29 @@ void getColumnInfo(int colIndex)
     // Determine type: 0 = integer, 1 = text
     columnTypes[colIndex] = (input.find("INT") != string::npos ||
                              input.find("int") != string::npos) ? 0 : 1;
+}
+
+// Aidan: Advanced Error Handling Helper
+int getValidInt(string prompt)
+{
+    int value;
+    while (true)
+    {
+        cout << prompt;
+        // Attempt to read an integer
+        if (cin >> value)
+        {
+            // Validation: Check if the input buffer is clean (no hidden letters like 12abc)
+            if (cin.peek() == '\n' || cin.peek() == EOF)
+            {
+                cin.ignore(); // Clear the newline character left in buffer
+                return value; // Success! Return the clean integer
+            }
+        }
+        
+        // If we reach here, the input was invalid
+        cout << "Error: Invalid input! Please enter a numeric integer value." << endl;
+        cin.clear();            // Reset the 'fail' state of cin
+        cin.ignore(1000, '\n'); // Clear the bad input from memory
+    }
 }
