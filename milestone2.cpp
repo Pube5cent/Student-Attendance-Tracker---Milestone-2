@@ -10,7 +10,7 @@
 // *********************************************************
 // Task Distribution
 // Member_1: Database handling [Reading, displaying and writing to a file]
-// Member_2: 
+// Member_2: Update attendance rows and view updated sheet, Delete attendance rows and view updated sheet, Main Program (QOL)
 // Member_3: 
 // *********************************************************
 
