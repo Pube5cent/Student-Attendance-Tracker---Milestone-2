@@ -11,7 +11,7 @@
 // Task Distribution
 // Member_1: Database handling [Reading, displaying and writing to a file] & updated csv code to support database
 // Member_2: Update attendance rows and view updated sheet, Delete attendance rows and view updated sheet, Main Program (QOL)
-// Member_3: 
+// Member_3: Count and output number of rows in the attendance sheet, Advanced error handling and validation
 // *********************************************************
 
 #include <iostream>
@@ -43,7 +43,7 @@ void insertRow();
 void updateRow();
 void deleteRow();
 void deleteSheet();
-void showRowCount();
+void showRowCount(); // (Aidan)
 int getValidInt(string prompt); // (Aidan)
 void ViewCSV();
 bool isNumber(const string& str);
