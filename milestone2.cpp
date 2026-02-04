@@ -64,7 +64,7 @@ void saveToCSV(const string& filename);
 int main()
 {
     cout << "===========================================\n";
-    cout << "   STUDENT ATTENDANCE TRACKER - COMBINED\n";
+    cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 2 \n";
     cout << "===========================================\n\n";
 
     string termName = createSchoolTerm();
@@ -158,7 +158,7 @@ int main()
     return 0;
 }
 
-// Create a school term (database name) and return it
+// Create a school term (database name) and return it (Adam)
 string createSchoolTerm()
 {
     string termName;
@@ -176,7 +176,7 @@ string createSchoolTerm()
     return termName;
 }
 
-// Check if a file exists in the filesystem
+// Check if a file exists in the filesystem (Adam)
 bool fileExists(const string& filename)
 {
     ifstream file(filename);
@@ -185,7 +185,7 @@ bool fileExists(const string& filename)
     return exists;
 }
 
-// Read an existing CSV database file and display it to the screen.
+// Read an existing CSV database file and display it to the screen. (Adam)
 void readDatabase(const string& filename)
 {
     ifstream inFile(filename);
@@ -209,7 +209,7 @@ void readDatabase(const string& filename)
     inFile.close();
 }
 
-// Load an existing CSV database file into the sheet structure
+// Load an existing CSV database file into the sheet structure (Adam)
 void loadDatabase(const string& filename)
 {
     ifstream inFile(filename);
@@ -259,7 +259,7 @@ void loadDatabase(const string& filename)
         }
     }
 
-    // Read data rows
+    // Read data rows 
     numRows = 0;
     while (getline(inFile, line) && numRows < MAX_ROWS)
     {
